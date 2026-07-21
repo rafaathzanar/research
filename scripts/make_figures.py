@@ -218,7 +218,11 @@ def figure4_complexity_vs_performance():
     ax2.set_title("Complexity vs user-level conversion")
 
     fig.suptitle("Operational complexity vs performance")
-    savefig(fig, 'complexity_vs_performance.png', rect=[0, 0, 1, 0.92])
+    fig.text(0.5, 0.93,
+              "No single strategy dominates both metrics: trigger optimizes per-send\n"
+              "efficiency; fixed and hybrid optimize user-level reach at higher complexity.",
+              ha='center', va='top', fontsize=10, fontstyle='italic')
+    savefig(fig, 'complexity_vs_performance.png', rect=[0, 0, 1, 0.85])
 
 
 def figure5_hybrid_routing_breakdown():
