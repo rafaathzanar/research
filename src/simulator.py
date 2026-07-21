@@ -35,13 +35,19 @@ def compute_user_propensities(user_row) -> dict:
 
 
 def simulate_message(user_row, message_index, triggered: bool, rng, signal_sparsity: float = 0.0) -> dict:
+    """
+    INTENT_UPLIFT is the end-to-end lift on conversion probability for triggered
+    sends, calibrated against the empirical fact that behaviorally-triggered
+    marketing messages convert at roughly 2-3x the rate of scheduled messages
+    per send. It is applied to convert_prob only, not to earlier funnel stages,
+    to avoid compounding along the sequential opened->clicked->converted chain.
+    """
     propensities = compute_user_propensities(user_row)
     open_prob = propensities['open_prob']
     click_prob = propensities['click_prob']
     convert_prob = propensities['convert_prob']
 
     if triggered:
-        click_prob = min(0.95, click_prob * INTENT_UPLIFT)
         convert_prob = min(0.95, convert_prob * INTENT_UPLIFT)
 
     opened = rng.random() < open_prob
@@ -94,13 +100,13 @@ if __name__ == "__main__":
 
         rng = np.random.default_rng(0)
         untriggered_converts = [
-            simulate_message(user_row, 0, False, rng)['converted'] for _ in range(5000)
+            simulate_message(user_row, 0, False, rng)['converted'] for _ in range(20000)
         ]
         untriggered_rate = np.mean(untriggered_converts)
 
         rng = np.random.default_rng(1)
         triggered_converts = [
-            simulate_message(user_row, 0, True, rng)['converted'] for _ in range(5000)
+            simulate_message(user_row, 0, True, rng)['converted'] for _ in range(20000)
         ]
         triggered_rate = np.mean(triggered_converts)
 
